@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Book a delivery slot</title>
+	<link rel="stylesheet" th:href="@{/css/app.css}">
+	<script th:src="@{/js/htmx.min.js}" defer></script>
+</head>
+<body>
+<header class="topbar">
+	<h1>Book a delivery slot</h1>
+</header>
+<main class="sheet">
+	<p id="global-error" class="alert alert-error" role="alert" hidden>Something went wrong. Please try again.</p>
+	<div id="app" aria-live="polite">
+		<div th:replace="~{fragments :: addressForm}"></div>
+	</div>
+	<p class="footnote">REST API documented in <a th:href="@{/swagger-ui.html}">Swagger UI</a></p>
+</main>
+<script>
+	// Fragments for expected outcomes (sold out, not covered...) come back as 200. Anything else is unexpected.
+	const globalError = document.getElementById('global-error');
+	document.addEventListener('htmx:beforeRequest', () => globalError.hidden = true);
+	document.addEventListener('htmx:responseError', () => globalError.hidden = false);
+	document.addEventListener('htmx:sendError', () => globalError.hidden = false);
+</script>
+</body>
+</html>

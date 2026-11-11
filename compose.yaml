@@ -1,0 +1,10 @@
+services:
+  postgres:
+    image: 'postgres:16-alpine'
+    environment:
+      - 'POSTGRES_DB=dispatch'
+      - 'POSTGRES_USER=dispatch'
+      - 'POSTGRES_PASSWORD=dispatch'
+    ports:
+      # 5433 on the host so it doesn't clash with a locally installed Postgres
+      - '5433:5432'

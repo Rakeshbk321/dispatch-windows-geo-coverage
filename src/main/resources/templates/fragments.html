@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<section th:fragment="addressForm" class="card">
+	<h2>Home delivery</h2>
+	<p class="hint">Enter the order and the delivery address.</p>
+	<p th:if="${error}" class="alert alert-error" role="alert" th:text="${error}">Error</p>
+	<form class="address-form" th:hx-get="@{/ui/schedule}" hx-target="#app">
+		<label>Order number
+			<input name="orderId" th:value="${form.orderId()}" required maxlength="64" placeholder="ORD-1001" autocomplete="off">
+		</label>
+		<label>Street
+			<input name="street" th:value="${form.street()}" required maxlength="200" placeholder="Monjitas">
+		</label>
+		<label>Number
+			<input name="number" th:value="${form.number()}" required maxlength="20" placeholder="2334">
+		</label>
+		<label>Commune
+			<select name="commune" required>
+				<option value="">Choose a commune</option>
+				<option th:each="c : ${communes}" th:value="${c.code}" th:text="|${c.name} (${c.region})|"
+						th:selected="${c.code == form.commune()}">Commune</option>
+			</select>
+		</label>
+		<button type="submit" class="primary">See dates and times</button>
+	</form>
+</section>
+
+<section th:fragment="schedule" class="card">
+	<div id="address-fields">
+		<input type="hidden" name="orderId" th:value="${form.orderId()}">
+		<input type="hidden" name="street" th:value="${form.street()}">
+		<input type="hidden" name="number" th:value="${form.number()}">
+		<input type="hidden" name="commune" th:value="${form.commune()}">
+	</div>
+	<div class="address-card">
+		<div>
+			<strong th:text="|Order ${form.orderId()}|">Order</strong>
+			<span th:text="${address}">Street, number, commune, region</span>
+		</div>
+		<a href="#" th:hx-get="@{/ui/address}" hx-include="#address-fields" hx-target="#app">Change</a>
+	</div>
+
+	<p th:if="${info}" class="alert alert-info" role="status" th:text="${info}">Info</p>
+	<p th:if="${error}" class="alert alert-error" role="alert" th:text="${error}">Error</p>
+	<p th:unless="${covered}" class="alert alert-error">We don't deliver to this address. Try another commune.</p>
+
+	<th:block th:if="${covered}">
+		<h2>Choose your delivery date and time</h2>
+		<div class="days" role="group" aria-label="Delivery date">
+			<button th:each="day : ${days}" type="button" class="day" name="date" th:value="${day.date()}"
+					th:classappend="${day.selected()} ? 'selected' : (${day.selectable()} ? '' : 'unavailable')"
+					th:disabled="${!day.selectable() and !day.selected()}"
+					th:attr="aria-pressed=${day.selected()}"
+					th:hx-get="@{/ui/schedule}" hx-include="#address-fields" hx-target="#app">
+				<span class="weekday" th:text="${day.weekday()}">Today</span>
+				<span class="circle" th:text="${day.dayMonth()}">27/1</span>
+				<span class="note" th:text="${day.note()}"></span>
+			</button>
+		</div>
+
+		<p th:if="${selectedDate == null}" class="alert alert-info">No delivery times left in the next 7 days.</p>
+
+		<form th:if="${selectedDate != null}" th:hx-post="@{/ui/bookings}" hx-include="#address-fields" hx-target="#app"
+			  hx-disabled-elt="find button[type=submit]">
+			<input type="hidden" name="date" th:value="${selectedDate}">
+			<fieldset class="blocks">
+				<legend class="visually-hidden">Delivery time</legend>
+				<label th:each="block : ${blocks}" class="block" th:classappend="${block.soldOut()} ? 'sold-out'">
+					<input type="radio" name="timeBlockId" th:value="${block.timeBlockId()}"
+						   th:disabled="${block.soldOut()}" required>
+					<span class="time" th:text="${block.label()}">4:00pm-6:00pm</span>
+					<span class="price" th:text="${block.soldOut()} ? 'Sold out' : ${block.price()}">$2,990</span>
+				</label>
+			</fieldset>
+			<button type="submit" class="primary">Book</button>
+		</form>
+	</th:block>
+</section>
+
+<section th:fragment="booked" class="card">
+	<h2>Booking confirmed!</h2>
+	<dl class="summary">
+		<dt>Order</dt>
+		<dd th:text="${booking.orderId()}">ORD-1001</dd>
+		<dt>Address</dt>
+		<dd th:text="${booking.address()}">Monjitas, 2334</dd>
+		<dt>Date</dt>
+		<dd th:text="${booking.date()}">Wed 28/1</dd>
+		<dt>Time</dt>
+		<dd th:text="${booking.time()}">4:00pm-6:00pm</dd>
+		<dt>Delivery cost</dt>
+		<dd th:text="${booking.price()}">$2,990</dd>
+		<dt>Booking code</dt>
+		<dd class="code" th:text="${booking.id()}">id</dd>
+	</dl>
+	<div class="actions">
+		<button type="button" class="secondary" hx-target="#app" hx-confirm="Cancel this booking?"
+				th:hx-post="@{/ui/bookings/{id}/cancel(id=${booking.id()})}">Cancel booking</button>
+		<a th:href="@{/}">Make another booking</a>
+	</div>
+</section>
+
+</body>
+</html>

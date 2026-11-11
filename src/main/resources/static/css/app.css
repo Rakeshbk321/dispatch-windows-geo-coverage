@@ -1,0 +1,98 @@
+/* Mobile-first, modelled on the reference screen from the challenge. */
+:root {
+	--blue: #0b6fd7;
+	--blue-dark: #0a58ab;
+	--blue-soft: #e8f1fc;
+	--ink: #1e1e1e;
+	--muted: #6b6b6b;
+	--line: #dfe5ee;
+	--grey: #eeeeee;
+	--error-bg: #fdecec;
+	--error-ink: #a31515;
+	--info-bg: #eaf6ec;
+	--info-ink: #1d6b2c;
+	font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+	color: var(--ink);
+}
+
+* { box-sizing: border-box; }
+
+body { margin: 0; background: #f4f6f9; }
+
+.topbar { background: var(--blue); color: #fff; padding: 18px 16px; }
+.topbar h1 { margin: 0 auto; max-width: 480px; font-size: 1.15rem; }
+
+.sheet { max-width: 480px; margin: 0 auto; padding: 16px; }
+
+.card { background: #fff; border-radius: 10px; padding: 16px; box-shadow: 0 1px 3px rgba(0, 0, 0, .08); }
+.card h2 { font-size: 1rem; font-weight: 600; margin: 16px 0 12px; }
+.card h2:first-child { margin-top: 0; }
+.hint { color: var(--muted); margin: 0 0 12px; font-size: .9rem; }
+
+.address-form { display: grid; gap: 12px; }
+.address-form label { display: grid; gap: 4px; font-size: .9rem; color: var(--muted); }
+.address-form input, .address-form select {
+	font: inherit; color: var(--ink); padding: 10px 12px; border: 1px solid var(--line); border-radius: 6px; background: #fff;
+}
+
+.address-card {
+	display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;
+	padding-bottom: 12px; border-bottom: 6px solid var(--grey); margin: 0 -16px; padding: 0 16px 12px;
+}
+.address-card div { display: grid; gap: 2px; font-size: .9rem; }
+.address-card a { color: var(--ink); font-size: .9rem; white-space: nowrap; }
+
+.days { display: flex; justify-content: space-between; gap: 4px; margin-bottom: 16px; }
+.day {
+	display: grid; justify-items: center; gap: 6px; flex: 1; min-width: 0;
+	background: none; border: 0; padding: 0; font: inherit; color: var(--ink); cursor: pointer;
+}
+.day .weekday { font-weight: 600; font-size: .85rem; }
+.day .circle {
+	display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%;
+	border: 1.5px solid var(--blue); font-size: .8rem;
+}
+.day .note { font-size: .7rem; color: var(--muted); min-height: 1em; }
+.day.selected .circle { background: var(--blue); color: #fff; }
+.day.unavailable { cursor: default; color: var(--muted); }
+.day.unavailable .circle { border-color: var(--grey); background: var(--grey); }
+.day:focus-visible .circle { outline: 3px solid var(--blue-soft); outline-offset: 2px; }
+
+.blocks { border: 0; padding: 0; margin: 0 0 16px; display: grid; gap: 10px; }
+.block {
+	display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px;
+	padding: 12px 14px; border: 1px solid var(--line); border-radius: 6px; cursor: pointer;
+}
+.block input { width: 20px; height: 20px; margin: 0; accent-color: var(--blue); }
+.block:has(input:checked) { border-color: var(--blue); background: var(--blue-soft); }
+.block.sold-out { cursor: default; color: var(--muted); background: #fafafa; }
+
+button.primary {
+	width: 100%; padding: 13px; border: 0; border-radius: 999px; background: var(--blue); color: #fff;
+	font: inherit; font-weight: 600; cursor: pointer;
+}
+button.primary:hover { background: var(--blue-dark); }
+button[disabled].primary { opacity: .6; cursor: progress; }
+button.secondary {
+	padding: 11px 16px; border: 1.5px solid var(--error-ink); border-radius: 999px; background: #fff;
+	color: var(--error-ink); font: inherit; font-weight: 600; cursor: pointer;
+}
+
+.alert { padding: 10px 12px; border-radius: 6px; font-size: .9rem; margin: 12px 0; }
+.alert-error { background: var(--error-bg); color: var(--error-ink); }
+.alert-info { background: var(--info-bg); color: var(--info-ink); }
+
+.summary { display: grid; grid-template-columns: auto 1fr; gap: 8px 16px; margin: 0 0 16px; font-size: .9rem; }
+.summary dt { color: var(--muted); }
+.summary dd { margin: 0; }
+.summary .code { font-family: ui-monospace, monospace; font-size: .8rem; word-break: break-all; }
+.actions { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.actions a { color: var(--blue); }
+
+.footnote { text-align: center; color: var(--muted); font-size: .8rem; }
+.footnote a { color: var(--blue); }
+
+.visually-hidden {
+	position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden;
+	clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}

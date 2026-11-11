@@ -146,7 +146,39 @@ src/main/resources/db/migration   Flyway schema and seed data
 
 The REST controllers and the page call the same services. Entities never leave the service layer; the API only returns records.
 
-There are architecture, data model and sequence diagrams in `docs/` as `.excalidraw` files. Drag one onto [excalidraw.com](https://excalidraw.com) to open it.
+![High-level architecture](docs/svg/01-high-level-architecture.svg)
+
+The diagrams in this README are SVG exports of the `.excalidraw` files in `docs/`. To edit one, drag the `.excalidraw` file onto [excalidraw.com](https://excalidraw.com), then export it again as SVG into `docs/svg/`. The rest are here:
+
+<details>
+<summary>Data model and booking states</summary>
+
+![Data model and booking states](docs/svg/02-lld-data-model-and-states.svg)
+</details>
+
+<details>
+<summary>Components and key SQL</summary>
+
+![Components and SQL](docs/svg/03-lld-components-and-sql.svg)
+</details>
+
+<details>
+<summary>Sequence: startup seeding and the daily horizon roll</summary>
+
+![Startup and horizon sequence](docs/svg/04-seq-startup-and-horizon.svg)
+</details>
+
+<details>
+<summary>Sequence: coverage, available dates and blocks</summary>
+
+![Coverage, dates and blocks sequence](docs/svg/05-seq-coverage-dates-blocks.svg)
+</details>
+
+<details>
+<summary>Sequence: get and cancel a booking</summary>
+
+![Get and cancel sequence](docs/svg/07-seq-get-and-cancel.svg)
+</details>
 
 ### Entity model
 
@@ -213,7 +245,11 @@ Booking runs in one transaction:
 2. Take a seat with one statement: `UPDATE dispatch_window SET booked_count = booked_count + 1 WHERE id = ? AND booked_count < capacity`.
 3. If that updated 0 rows, the window is full. Throwing rolls back the transaction, which also removes the booking row from step 1.
 
+![Booking sequence](docs/svg/06-seq-book-window.svg)
+
 The check and the increment happen in the same statement. Postgres locks the row while it updates it, so concurrent bookings for the same window wait in line, and each one checks `booked_count < capacity` against the latest committed value. There's no gap between reading the count and writing it, which is where over-booking usually comes from. On top of that, a `CHECK (booked_count <= capacity)` constraint means even a bug in my code couldn't over-book.
+
+![Two bookings racing for the last seat](docs/svg/08-seq-concurrency-race.svg)
 
 Cancelling is `UPDATE booking SET status = 'CANCELLED' WHERE id = ? AND status = 'CONFIRMED'`, and the seat is only given back if that changed a row. Two cancels of the same booking at the same moment can't both give a seat back.
 

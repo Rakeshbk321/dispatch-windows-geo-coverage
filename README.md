@@ -230,9 +230,9 @@ erDiagram
     }
 ```
 
-- A **zone** is a group of communes. Each commune points to at most one zone, so two zones can't overlap. A commune with no zone is one we know about but don't deliver to.
+- A **zone** is a group of communes. Each commune points to at most one zone, so two zones can't overlap. A commune with no zone is one we know about but don't deliver to. Each zone sets how many orders a window can take (`window_capacity`: 5 for La Serena - Coquimbo and Valparaíso - Viña del Mar, 8 for Santiago Centro-Oriente, set in `V2__reference_data.sql`).
 - A **time block** is a delivery slot like 16:00-18:00 with a price. All zones share the same blocks.
-- A **dispatch window** is one zone, one date and one block. It holds the capacity and how many seats are taken. The app creates 7 days of them ahead and adds a new day every night at 00:05.
+- A **dispatch window** is one zone, one date and one block. It holds the capacity and how many seats are taken. The capacity is copied from the zone when the window is created, so changing a zone's capacity only affects windows created after that. The app creates 7 days of them ahead and adds a new day every night at 00:05.
 - A **booking** takes one seat in a window for one order. It keeps a copy of the price, so changing a block's price later doesn't change what an existing booking says it cost.
 
 ### How over-booking is prevented
